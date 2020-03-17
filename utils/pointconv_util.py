@@ -48,7 +48,7 @@ def kernel_density_estimation_ball(pts, radius, sigma, N_points = 128, is_norm =
 
         first_val, _ = tf.split(mvnpdf, [1, N_points - 1], axis = 2)
 
-        mvnpdf = tf.reduce_sum(mvnpdf, axis = 2, keepdims = True)
+        mvnpdf = tf.reduce_sum(mvnpdf, axis = 2, keep_dims = True)
 
         num_val_to_sub = tf.expand_dims(tf.cast(tf.subtract(N_points, pts_cnt), dtype = tf.float32), axis = -1)
 
@@ -60,8 +60,8 @@ def kernel_density_estimation_ball(pts, radius, sigma, N_points = 128, is_norm =
         density = tf.multiply(mvnpdf, scale)
 
         if is_norm:
-            #grouped_xyz_sum = tf.reduce_sum(grouped_xyz, axis = 1, keepdims = True)
-            density_max = tf.reduce_max(density, axis = 1, keepdims = True)
+            #grouped_xyz_sum = tf.reduce_sum(grouped_xyz, axis = 1, keep_dims = True)
+            density_max = tf.reduce_max(density, axis = 1, keep_dims= True)
             density = tf.div(density, density_max)
 
         return density
@@ -86,14 +86,14 @@ def kernel_density_estimation(pts, sigma, kpoint = 32, is_norm = False):
         quadform = tf.reduce_sum(tf.square(xRinv), axis = -1)
         logsqrtdetSigma = tf.log(R) * 3
         mvnpdf = tf.exp(-0.5 * quadform - logsqrtdetSigma - 3 * tf.log(2 * 3.1415926) / 2)
-        mvnpdf = tf.reduce_sum(mvnpdf, axis = 2, keepdims = True)
+        mvnpdf = tf.reduce_sum(mvnpdf, axis = 2, keep_dims = True)
 
         scale = 1.0 / kpoint
         density = tf.multiply(mvnpdf, scale)
 
         if is_norm:
-            #grouped_xyz_sum = tf.reduce_sum(grouped_xyz, axis = 1, keepdims = True)
-            density_max = tf.reduce_max(density, axis = 1, keepdims = True)
+            #grouped_xyz_sum = tf.reduce_sum(grouped_xyz, axis = 1, keep_dims = True)
+            density_max = tf.reduce_max(density, axis = 1, keep_dims = True)
             density = tf.div(density, density_max)
 
         return density

@@ -59,10 +59,19 @@ def get_loss(pred, label, smpw):
     return total_loss
 
 if __name__=='__main__':
-    import pdb
-    pdb.set_trace()
+    # import pdb
+    # pdb.set_trace()
 
-    with tf.Graph().as_default():
-        inputs = tf.zeros((32,2048,3))
-        net, _ = get_model(inputs, tf.constant(True), 10, 1.0)
-        print(net)
+    with tf.device("GPU:1"):
+
+        inputs = tf.random_normal((1,1024,3))
+        net, end_points = get_model(inputs, tf.constant(True), 10, 1.0)
+        init_g = tf.global_variables_initializer()
+        config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
+        config.gpu_options.allow_growth = True
+
+    with tf.Session(config=config) as session:
+        print(session.run(inputs))
+        session.run(init_g)
+        print(session.run(net))
+    print(net)

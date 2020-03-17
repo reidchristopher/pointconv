@@ -101,7 +101,7 @@ def feature_encoding_layer(xyz, feature, npoint, radius, sigma, K, mlp, is_train
         inverse_density = tf.div(1.0, density)
         grouped_density = tf.gather_nd(inverse_density, idx) # (batch_size, npoint, nsample, 1)
         #grouped_density = tf_grouping.group_point(inverse_density, idx)
-        inverse_max_density = tf.reduce_max(grouped_density, axis = 2, keepdims = True)
+        inverse_max_density = tf.reduce_max(grouped_density, axis = 2, keep_dims = True)
         density_scale = tf.div(grouped_density, inverse_max_density)
 
         #density_scale = tf_grouping.group_point(density, idx)
@@ -147,7 +147,7 @@ def feature_decoding_layer(xyz1, xyz2, points1, points2, radius, sigma, K, mlp, 
     with tf.variable_scope(scope) as sc:
         dist, idx = three_nn(xyz1, xyz2)
         dist = tf.maximum(dist, 1e-10)
-        norm = tf.reduce_sum((1.0/dist),axis=2,keepdims=True)
+        norm = tf.reduce_sum((1.0/dist),axis=2,keep_dims=True)
         norm = tf.tile(norm,[1,1,3])
         weight = (1.0/dist) / norm
         interpolated_points = three_interpolate(points2, idx, weight)
@@ -159,7 +159,7 @@ def feature_decoding_layer(xyz1, xyz2, points1, points2, radius, sigma, K, mlp, 
         inverse_density = tf.div(1.0, density)
         grouped_density = tf.gather_nd(inverse_density, idx) # (batch_size, npoint, nsample, 1)
         #grouped_density = tf_grouping.group_point(inverse_density, idx)
-        inverse_max_density = tf.reduce_max(grouped_density, axis = 2, keepdims = True)
+        inverse_max_density = tf.reduce_max(grouped_density, axis = 2, keep_dims = True)
         density_scale = tf.div(grouped_density, inverse_max_density)
 
         #density_scale = tf_grouping.group_point(density, idx)
@@ -209,7 +209,7 @@ def feature_decoding_layer_depthwise(xyz1, xyz2, points1, points2, radius, sigma
     with tf.variable_scope(scope) as sc:
         dist, idx = three_nn(xyz1, xyz2)
         dist = tf.maximum(dist, 1e-10)
-        norm = tf.reduce_sum((1.0/dist),axis=2,keepdims=True)
+        norm = tf.reduce_sum((1.0/dist),axis=2,keep_dims=True)
         norm = tf.tile(norm,[1,1,3])
         weight = (1.0/dist) / norm
         interpolated_points = three_interpolate(points2, idx, weight)
@@ -221,7 +221,7 @@ def feature_decoding_layer_depthwise(xyz1, xyz2, points1, points2, radius, sigma
         inverse_density = tf.div(1.0, density)
         grouped_density = tf.gather_nd(inverse_density, idx) # (batch_size, npoint, nsample, 1)
         #grouped_density = tf_grouping.group_point(inverse_density, idx)
-        inverse_max_density = tf.reduce_max(grouped_density, axis = 2, keepdims = True)
+        inverse_max_density = tf.reduce_max(grouped_density, axis = 2, keep_dims = True)
         density_scale = tf.div(grouped_density, inverse_max_density)
 
         #density_scale = tf_grouping.group_point(density, idx)
@@ -235,7 +235,7 @@ def feature_decoding_layer_depthwise(xyz1, xyz2, points1, points2, radius, sigma
         new_points = tf.multiply(grouped_feature, weight)
 
         new_points = tf_util.reduce_sum2d_conv(new_points, axis = 2, scope = 'fp_sumpool', bn=True,
-                                        bn_decay = bn_decay, is_training = is_training, keepdims = False)    
+                                        bn_decay = bn_decay, is_training = is_training, keep_dims = False)
 
         if points1 is not None:
             new_points1 = tf.concat(axis=-1, values=[new_points, points1]) # B,ndataset1,nchannel1+nchannel2
