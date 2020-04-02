@@ -60,7 +60,7 @@ def conv1d(inputs,
            use_xavier=True,
            stddev=1e-3,
            weight_decay=None,
-           activation_fn=tf.nn.relu,
+           activation_fn=tf.nn.leaky_relu,
            bn=False,
            bn_decay=None,
            is_training=None):

@@ -132,7 +132,7 @@ def feature_encoding_layer(xyz, feature, npoint, radius, sigma, K, mlp, is_train
 
         return new_xyz, new_points
 
-def feature_decoding_layer(xyz1, xyz2, points1, points2, radius, sigma, K, mlp, is_training, bn_decay, weight_decay, scope, bn=True, use_xyz = True):
+def feature_decoding_layer(xyz1, xyz2, points1, points2, radius, sigma, K, mlp, is_training, bn_decay, weight_decay, scope, bn=True, use_xyz = True, npoint=None):
     ''' Input:                                                                                                      
             xyz1: (batch_size, ndataset1, 3) TF tensor                                                              
             xyz2: (batch_size, ndataset2, 3) TF tensor, sparser than xyz1                                           
@@ -153,7 +153,7 @@ def feature_decoding_layer(xyz1, xyz2, points1, points2, radius, sigma, K, mlp, 
         interpolated_points = three_interpolate(points2, idx, weight)
 
         #setup for deConv
-        grouped_xyz, grouped_feature, idx = pointconv_util.grouping(interpolated_points, K, xyz1, xyz1, use_xyz=use_xyz)
+        grouped_xyz, grouped_feature, idx = pointconv_util.grouping(interpolated_points, K, xyz1, xyz1, use_xyz=use_xyz, npoint=npoint)
 
         density = pointconv_util.kernel_density_estimation_ball(xyz1, radius, sigma)
         inverse_density = tf.div(1.0, density)

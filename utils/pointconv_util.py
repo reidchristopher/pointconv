@@ -110,7 +110,7 @@ def sampling(npoint, pts):
     sub_pts = tf_sampling.gather_point(pts, tf_sampling.farthest_point_sample(npoint, pts))
     return sub_pts
 
-def grouping(feature, K, src_xyz, q_xyz, use_xyz = True):
+def grouping(feature, K, src_xyz, q_xyz, use_xyz = True, npoint=None):
     '''
     K: neighbor size
     src_xyz: original point xyz (batch_size, ndataset, 3)
@@ -118,12 +118,17 @@ def grouping(feature, K, src_xyz, q_xyz, use_xyz = True):
     '''
 
     batch_size = src_xyz.get_shape()[0]
-    npoint = q_xyz.get_shape()[1]
+    if npoint is None:
+        npoint = q_xyz.get_shape()[1]
+    else:
+        #print(npoint)
+        pass
 
     point_indices = tf.py_func(knn_kdtree, [K, src_xyz, q_xyz], tf.int32)
     batch_indices = tf.tile(tf.reshape(tf.range(batch_size), (-1, 1, 1, 1)), (1, npoint, K, 1))
     idx = tf.concat([batch_indices, tf.expand_dims(point_indices, axis = 3)], axis = 3)
-    idx.set_shape([batch_size, npoint, K, 2])
+
+    idx.set_shape([batch_size, None, K, 2])
 
     grouped_xyz = tf.gather_nd(src_xyz, idx)
     grouped_xyz -= tf.tile(tf.expand_dims(q_xyz, 2), [1,1,K,1]) # translation normalization
